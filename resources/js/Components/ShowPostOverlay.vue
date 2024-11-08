@@ -1,5 +1,5 @@
 <script setup>
-import { ref, toRefs } from "vue";
+import { ref, toRefs, toValue } from "vue";
 import { usePage } from "@inertiajs/vue3";
 
 import ShowPostOptionsOverlay from "@/Components/ShowPostOptionsOverlay.vue";
@@ -20,19 +20,59 @@ const emit = defineEmits([
     "deleteSelected",
 ]);
 
+const { post } = toRefs(props);
+
+const textareaNode = ref(null);
+const comment = ref("");
+const deleteType = ref(false);
+const id = ref(null);
+
+const user = usePage().props.auth.user;
+
 const textareaInput = (event) => {
     textareaNode.value.style.height = "auto";
     textareaNode.value.style.height = `${event.target.scrollHeight}px`;
 };
 
-const { post } = toRefs(props);
+const setDeleteTypeToDeletionPost = (post) => {
+    deleteType.value = "Post";
+    id.value = post.id;
+};
 
-const textareaNode = ref(null);
-const comment = ref("");
-const deleteType = ref(true);
-const id = ref(null);
+const setDeleteTypeToDeletionComment = (comment) => {
+    deleteType.value = "Comment";
+    id.value = comment.id;
+};
 
-// const user = usePage().props.auth.user;
+const addComment = () => {
+    emit("addComment", {
+        post: toValue(post),
+        user: toValue(user),
+        comment: toValue(comment),
+    });
+
+    comment.value = "";
+};
+
+const handleDeleteSelected = (event) => {
+    emit("deleteSelected", {
+        deleteType: event.deleteType,
+        id: event.id,
+        post,
+    });
+
+    deleteType.value = null;
+    id.value = null;
+};
+
+const handleClose = () => {
+    deleteType.value = null;
+    id.value = null;
+};
+
+const handleLike = (likeInfo) => {
+    emit("updateLike", likeInfo);
+};
 </script>
 
 <template>
@@ -50,8 +90,8 @@ const id = ref(null);
             <div class="w-full h-full overflow-auto md:flex rounded-xl">
                 <div class="flex items-center w-full bg-black">
                     <img
+                        :src="props.post.file"
                         class="rounded-xl min-w-[400px] p-4 mx-auto"
-                        src="https://placehold.co/400x400"
                     />
                 </div>
 
@@ -59,11 +99,11 @@ const id = ref(null);
                     <div class="flex items-center justify-between p-3 border-b">
                         <div class="flex items-center">
                             <img
+                                :src="post.user.file"
                                 class="rounded-full w-[38px] h-[38px]"
-                                src="https://placehold.co/400x400"
                             />
                             <div class="ml-4 font-extrabold text-[15px]">
-                                NAME HERE
+                                {{ post.user.name }}
                             </div>
                             <div
                                 class="flex items-center text-[15px] text-gray-500"
@@ -71,11 +111,14 @@ const id = ref(null);
                                 <span class="-mt-5 ml-2 mr-[5px] text-[35px]">
                                     .
                                 </span>
-                                <div>DATE HERE</div>
+                                <div>{{ post.created_at }}</div>
                             </div>
                         </div>
 
-                        <button>
+                        <button
+                            v-if="user.id === post.user.id"
+                            @click="setDeleteTypeToDeletionPost(post)"
+                        >
                             <DotsHorizontal :size="27" class="cursor-pointer" />
                         </button>
                     </div>
@@ -84,57 +127,74 @@ const id = ref(null);
                         <div class="flex items-center justify-between p-3">
                             <div class="relative flex items-center">
                                 <img
+                                    :src="post.user.file"
                                     class="absolute -top-1 rounded-full w-[38px] h-[38px]"
-                                    src="https://placehold.co/400x400"
                                 />
                                 <div class="ml-14">
                                     <span
                                         class="font-extrabold text-[15px] mr-2"
                                     >
-                                        NAME HERE
+                                        {{ post.user.name }}
                                     </span>
 
                                     <span class="text-[15px] text-gray-900">
-                                        THIS IS A COMMENT
+                                        {{ post.text }}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="p-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <img
-                                        class="rounded-full w-[38px] h-[38px]"
-                                        src="https://placehold.co/400x400"
-                                    />
-                                    <div
-                                        class="ml-4 font-extrabold text-[15px]"
-                                    >
-                                        NAME HERE
-                                        <span
-                                            class="text-sm font-light text-gray-700"
+                        <template v-if="post.comments">
+                            <div
+                                v-for="comment in post.comments"
+                                :key="comment.id"
+                                class="p-3"
+                            >
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <img
+                                            class="rounded-full w-[38px] h-[38px]"
+                                            src="https://placehold.co/400x400"
+                                        />
+                                        <div
+                                            class="ml-4 font-extrabold text-[15px]"
                                         >
-                                            DATE HERE
-                                        </span>
+                                            {{ comment.user.name }}
+                                            <span
+                                                class="text-sm font-light text-gray-700"
+                                            >
+                                                {{ comment.created_at }}
+                                            </span>
+                                        </div>
                                     </div>
+
+                                    <DotsHorizontal
+                                        v-if="user.id === comment.user.id"
+                                        :size="27"
+                                        class="cursor-pointer"
+                                        @click="
+                                            setDeleteTypeToDeletionComment(
+                                                comment
+                                            )
+                                        "
+                                    />
                                 </div>
 
-                                <DotsHorizontal
-                                    :size="27"
-                                    class="cursor-pointer"
-                                />
+                                <div class="text-[13px] pl-[55px]">
+                                    {{ comment.text }}
+                                </div>
                             </div>
-
-                            <div class="text-[13px] pl-[55px]">
-                                THIS COMMENT SECTION
-                            </div>
-                        </div>
+                        </template>
 
                         <div class="pb-16 md:hidden"></div>
                     </div>
 
-                    <LikesSection class="px-2 mb-2 border-t" />
+                    <LikesSection
+                        v-if="post"
+                        :post="post"
+                        class="px-2 mb-2 border-t"
+                        @like="handleLike"
+                    />
 
                     <div
                         class="absolute flex border bottom-0 w-full max-h-[200px] bg-white overflow-auto"
@@ -156,6 +216,7 @@ const id = ref(null);
                         <button
                             v-if="comment"
                             class="pr-4 font-extrabold text-blue-600"
+                            @click="addComment"
                         >
                             Post
                         </button>
@@ -165,5 +226,11 @@ const id = ref(null);
         </div>
     </div>
 
-    <ShowPostOptionsOverlay v-if="deleteType" :delete-type="deleteType" />
+    <ShowPostOptionsOverlay
+        v-if="deleteType"
+        :delete-type="deleteType"
+        :id="id"
+        @delete-selected="handleDeleteSelected"
+        @close="handleClose"
+    />
 </template>

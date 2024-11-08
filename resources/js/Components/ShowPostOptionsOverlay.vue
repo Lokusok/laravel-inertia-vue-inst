@@ -9,6 +9,10 @@ const props = defineProps({
 const emit = defineEmits(["close", "deleteSelected"]);
 
 const { id, deleteType } = toRefs(props);
+
+const handleDeleteClick = () => {
+    emit("deleteSelected", { id, deleteType });
+};
 </script>
 
 <template>
@@ -21,8 +25,9 @@ const { id, deleteType } = toRefs(props);
         >
             <button
                 class="w-full p-3 text-lg font-extrabold text-red-600 border-b cursor-pointer border-b-gray-300"
+                @click="handleDeleteClick"
             >
-                Delete
+                Delete {{ deleteType }}
             </button>
 
             <button class="p-3 text-lg" @click="$emit('close')">Cancel</button>
