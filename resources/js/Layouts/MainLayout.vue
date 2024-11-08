@@ -34,7 +34,7 @@ const disableCreatingPost = () => {
             class="fixed z-30 md:hidden block w-full bg-white h-[61px] border-b border-b-gray-300"
         >
             <div class="flex items-center justify-between h-full">
-                <Link href="/">
+                <Link :href="route('home')">
                     <img
                         class="w-[105px] ml-6 cursor-pointer"
                         src="/insta-logo.png"
@@ -82,7 +82,7 @@ const disableCreatingPost = () => {
             id="SideNav"
             class="fixed h-full bg-white xl:w-[280px] w-[80px] md:block hidden border-r border-r-gray-300"
         >
-            <Link>
+            <Link :href="route('home')">
                 <img
                     class="xl:hidden block w-[25px] mt-10 ml-[25px] mb-10 cursor-pointer"
                     src="/insta-logo-small.png"
@@ -117,7 +117,7 @@ const disableCreatingPost = () => {
         </div>
 
         <div
-            class="flex lg:justify-between bg-white h-full w-[100%-280px] xl:pl-[280px] pl-[100px] overflow-auto"
+            class="flex lg:justify-between bg-white h-full w-[100%-280px] xl:pl-[280px] lg:pl-[100px] overflow-auto"
         >
             <div
                 class="pt-20 mx-auto md:pt-6"
