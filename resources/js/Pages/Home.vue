@@ -5,6 +5,7 @@ import { Head, Link, router } from "@inertiajs/vue3";
 import MainLayout from "@/Layouts/MainLayout.vue";
 
 import LikesSection from "@/Components/LikesSection.vue";
+import ShowPostOverlay from "@/Components/ShowPostOverlay.vue";
 
 import "vue3-carousel/dist/carousel.css";
 import { Carousel, Slide, Navigation } from "vue3-carousel";
@@ -27,6 +28,14 @@ onMounted(() => {
         wWidth.value = window.innerWidth;
     });
 });
+
+const activateOverlay = () => {
+    openOverlay.value = true;
+};
+
+const disableOverlay = () => {
+    openOverlay.value = false;
+};
 </script>
 
 <template>
@@ -115,7 +124,10 @@ onMounted(() => {
                     <span>this is some text here</span>
                 </div>
 
-                <button class="py-1 font-extrabold text-gray-500">
+                <button
+                    class="py-1 font-extrabold text-gray-500"
+                    @click="activateOverlay"
+                >
                     View all 4 comments
                 </button>
             </div>
@@ -123,6 +135,12 @@ onMounted(() => {
             <div class="pb-20"></div>
         </div>
     </MainLayout>
+
+    <ShowPostOverlay
+        v-if="openOverlay"
+        :post="currentPost"
+        @close-overlay="disableOverlay"
+    />
 </template>
 
 <style>
