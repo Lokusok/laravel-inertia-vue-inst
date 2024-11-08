@@ -24,7 +24,7 @@ const { postsByUser, user } = toRefs(props);
 const getUploadedImage = (event) => {
     form.file = event.target.files[0];
 
-    router.post("/users", form, {
+    router.put("/users", form, {
         preserveState: true,
     });
 };

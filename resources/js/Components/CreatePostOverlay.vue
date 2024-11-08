@@ -99,6 +99,7 @@ const getUploadedImage = (event) => {
 
                 <button
                     class="text-lg font-extrabold text-blue-500 hover:text-gray-900"
+                    @click="createPost"
                 >
                     Share
                 </button>
