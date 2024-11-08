@@ -12,8 +12,17 @@ import ChevronLeft from "vue-material-design-icons/ChevronLeft.vue";
 import AccoutPlusOutline from "vue-material-design-icons/AccountPlusOutline.vue";
 
 import MenuItem from "@/Components/MenuItem.vue";
+import CreatePostOverlay from "@/Components/CreatePostOverlay.vue";
 
 const showCreatePost = ref(false);
+
+const enableCreatingPost = () => {
+    showCreatePost.value = true;
+};
+
+const disableCreatingPost = () => {
+    showCreatePost.value = false;
+};
 </script>
 
 <template>
@@ -95,7 +104,7 @@ const showCreatePost = ref(false);
                 <MenuItem
                     icon-string="Create"
                     class="mb-4"
-                    @click="showCreatePost = true"
+                    @click="enableCreatingPost"
                 />
                 <Link href="/">
                     <MenuItem icon-string="Profile" class="mb-4" />
@@ -220,7 +229,7 @@ const showCreatePost = ref(false);
             <Compass fill-color="#000000" :size="33" class="cursor-pointer" />
             <Compass fill-color="#000000" :size="33" class="cursor-pointer" />
             <Plus
-                @click="($event) => (showCreatePost = true)"
+                @click="enableCreatingPost"
                 fill-color="#000000"
                 :size="33"
                 class="cursor-pointer"
@@ -238,4 +247,6 @@ const showCreatePost = ref(false);
             </Link>
         </div>
     </div>
+
+    <CreatePostOverlay v-if="showCreatePost" @close="disableCreatingPost" />
 </template>
