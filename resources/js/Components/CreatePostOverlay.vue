@@ -153,12 +153,11 @@ const getUploadedImage = (event) => {
                     <div class="flex items-center justify-between p-3">
                         <div class="flex items-center">
                             <img
+                                :src="user.file"
                                 class="rounded-full w-[38px] h-[38px]"
-                                src="https://placehold.co/200x200"
-                                alt=""
                             />
                             <div class="ml-4 font-extrabold text-[15px]">
-                                NAME HERE
+                                {{ user.name }}
                             </div>
                         </div>
                     </div>

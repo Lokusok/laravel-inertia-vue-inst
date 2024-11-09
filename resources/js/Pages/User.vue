@@ -10,6 +10,7 @@ import BookmarkOutline from "vue-material-design-icons/BookmarkOutline.vue";
 import AccountBoxOutline from "vue-material-design-icons/AccountBoxOutline.vue";
 
 import ContentOverlay from "@/Components/ContentOverlay.vue";
+import ShowPostOverlay from "@/Components/ShowPostOverlay.vue";
 
 const data = reactive({ post: null });
 const form = reactive({ file: null });
@@ -24,9 +25,76 @@ const { postsByUser, user } = toRefs(props);
 const getUploadedImage = (event) => {
     form.file = event.target.files[0];
 
-    router.put("/users", form, {
+    router.post("/users", form, {
         preserveState: true,
     });
+};
+
+const addComment = (newComment) => {
+    const comment = {
+        post_id: newComment.post.id,
+        user_id: newComment.user.id,
+        comment: newComment.comment,
+    };
+
+    router.post("/comments", comment, {
+        onFinish: () => updatePost(newComment),
+    });
+};
+
+const deleteSelected = (entity) => {
+    let url = "";
+
+    if (entity.deleteType === "Post") {
+        url = `/posts/${entity.id}`;
+        setTimeout(() => (data.post = null), 100);
+    } else {
+        url = `/comments/${entity.id}`;
+    }
+
+    router.delete(url, {
+        onFinish: () => updatePost(entity),
+    });
+};
+
+const updateLike = (newLike) => {
+    let deleteLike = false;
+    let id = null;
+
+    for (let i = 0; i < newLike.post.likes.length; i++) {
+        const like = newLike.post.likes[i];
+
+        if (like.user_id === user.id && like.post_id === newLike.post.id) {
+            deleteLike = true;
+            id = like.id;
+        }
+    }
+
+    if (deleteLike) {
+        router.delete(`/likes/${id}`, {
+            onFinish: () => updatePost(newLike),
+        });
+    } else {
+        router.post(
+            "/likes",
+            {
+                post_id: newLike.post.id,
+            },
+            {
+                onFinish: () => updatePost(newLike),
+            }
+        );
+    }
+};
+
+const updatePost = (newPost) => {
+    for (let i = 0; i < postsByUser.value.data.length; i++) {
+        const post = postsByUser.value.data[i];
+
+        if (post.id === newPost.post.id) {
+            data.post = post;
+        }
+    }
 };
 </script>
 
@@ -39,11 +107,12 @@ const getUploadedImage = (event) => {
             <div class="flex items-center md:justify-between">
                 <label for="fileUser">
                     <img
+                        :src="user.file"
                         class="rounded-full object-fit md:w-[200px] w-[100px] cursor-pointer"
-                        src="https://placehold.co/200x200"
                     />
                 </label>
                 <input
+                    v-if="user.id === $page.props.auth.user.id"
                     id="fileUser"
                     class="hidden"
                     type="file"
@@ -53,7 +122,7 @@ const getUploadedImage = (event) => {
                 <div class="w-full ml-6">
                     <div class="flex items-center mb-5 md:mb-8">
                         <div class="md:mr-6 mr-3 rounded-lg text-[22px]">
-                            NAME HERE
+                            {{ user.name }}
                         </div>
                         <button
                             class="md:block hidden md:mr-6 p-1 px-4 rounded-lg text-[16px] font-extrabold bg-gray-100 hover:bg-gray-200"
@@ -70,7 +139,9 @@ const getUploadedImage = (event) => {
                     <div class="hidden md:block">
                         <div class="flex items-center text-[18px] gap-x-5">
                             <div>
-                                <span class="font-extrabold">4</span>
+                                <span class="font-extrabold">
+                                    {{ postsByUser.data.length }}
+                                </span>
                                 posts
                             </div>
 
@@ -94,7 +165,9 @@ const getUploadedImage = (event) => {
                 class="flex items-center justify-around w-full mt-8 border-t border-t-gray-300"
             >
                 <div class="p-3 text-center">
-                    <div class="font-extrabold">4</div>
+                    <div class="font-extrabold">
+                        {{ postsByUser.data.length }}
+                    </div>
                     <div class="text-gray-400 font-semibold -mt-1.5">posts</div>
                 </div>
                 <div class="p-3 text-center">
@@ -202,8 +275,27 @@ const getUploadedImage = (event) => {
             </div>
 
             <div class="relative grid grid-cols-3 gap-1 md:gap-4">
-                <ContentOverlay />
+                <div
+                    v-for="postByUser in postsByUser.data"
+                    :key="postByUser.id"
+                >
+                    <ContentOverlay
+                        :post-by-user="postByUser"
+                        @selected-post="data.post = $event"
+                    />
+                </div>
             </div>
+
+            <div class="pb-20" />
         </div>
     </MainLayout>
+
+    <ShowPostOverlay
+        v-if="data.post"
+        :post="data.post"
+        @add-comment="addComment"
+        @update-like="updateLike"
+        @delete-selected="deleteSelected"
+        @close-overlay="data.post = null"
+    />
 </template>

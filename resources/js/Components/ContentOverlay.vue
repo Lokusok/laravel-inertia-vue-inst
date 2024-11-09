@@ -20,6 +20,7 @@ const isHover = ref(false);
         class="relative flex items-center justify-center cursor-pointer"
         @mouseenter="isHover = true"
         @mouseleave="isHover = false"
+        @click="$emit('selectedPost', postByUser)"
     >
         <div
             v-if="isHover"
@@ -29,19 +30,19 @@ const isHover = ref(false);
             <div class="flex items-center justify-around w-[50%]">
                 <div class="flex items-center justify-center">
                     <Heart :size="30" fill-color="#ffffff" />
-                    <div class="pl-1">3</div>
+                    <div class="pl-1">{{ postByUser.likes.length }}</div>
                 </div>
 
                 <div class="flex items-center justify-center">
                     <Comment :size="30" fill-color="#ffffff" />
-                    <div class="pl-1">5</div>
+                    <div class="pl-1">{{ postByUser.comments.length }}</div>
                 </div>
             </div>
         </div>
 
         <img
+            :src="postByUser.file"
             class="z-0 object-cover w-full h-full mx-auto cursor-pointer aspect-square"
-            src="https://placehold.co/200x200"
         />
     </div>
 </template>

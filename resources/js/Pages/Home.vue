@@ -46,8 +46,6 @@ const updateLike = (newLike) => {
     let deleteLike = false;
     let id = null;
 
-    console.log(newLike);
-
     for (let i = 0; i < newLike.post.likes.length; i++) {
         const like = newLike.post.likes[i];
 
@@ -86,8 +84,22 @@ const addComment = (newComment) => {
     });
 };
 
-const deleteSelected = () => {
-    openOverlay.value = false;
+const deleteSelected = (entity) => {
+    let url = "";
+
+    if (entity.deleteType === "Post") {
+        url = `/posts/${entity.id}`;
+    } else {
+        url = `/comments/${entity.id}`;
+    }
+
+    router.delete(url, {
+        onFinish: () => updatePost(entity),
+    });
+
+    if (entity.deleteType === "Post") {
+        openOverlay.value = false;
+    }
 };
 
 const updatePost = (newPost) => {
@@ -176,7 +188,11 @@ const updatePost = (newPost) => {
                         </div>
                     </div>
 
-                    <DotsHorizontal :size="27" class="cursor-pointer" />
+                    <DotsHorizontal
+                        :size="27"
+                        class="cursor-pointer"
+                        @click="deleteSelected"
+                    />
                 </div>
 
                 <div

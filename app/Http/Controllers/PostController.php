@@ -24,6 +24,7 @@ class PostController extends Controller
             'text' => ['required']
         ]);
 
+        // @TODO переписать на DTO Illuminate\Http\UploadedFile
         $post = $this->fileService->updateFile($post, $request, 'post');
 
         $post->user_id = auth()->user()->id;

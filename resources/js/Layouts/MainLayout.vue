@@ -72,7 +72,9 @@ const disableCreatingPost = () => {
                 <ChevronLeft :size="30" class="cursor-pointer" />
             </Link>
 
-            <div class="text-lg font-extrabold">NAME HERE</div>
+            <div class="text-lg font-extrabold">
+                {{ $page.props.auth.user.name }}
+            </div>
 
             <AccoutPlusOutline :size="30" class="px-4 cursor-pointer" />
         </div>
@@ -106,12 +108,20 @@ const disableCreatingPost = () => {
                     class="mb-4"
                     @click="enableCreatingPost"
                 />
-                <Link href="/">
+                <Link
+                    :href="
+                        route('users.show', { id: $page.props.auth.user.id })
+                    "
+                >
                     <MenuItem icon-string="Profile" class="mb-4" />
                 </Link>
             </div>
 
-            <Link href="/" class="absolute bottom-0 w-full px-3">
+            <Link
+                :href="route('logout')"
+                as="button"
+                class="absolute bottom-0 w-full px-3"
+            >
                 <MenuItem icon-string="Log out" class="mb-4" />
             </Link>
         </div>
@@ -138,20 +148,22 @@ const disableCreatingPost = () => {
                 class="hidden mt-10 text-black lg:w-4/12 lg:block"
             >
                 <Link
-                    href="/"
+                    :href="
+                        route('users.show', { id: $page.props.auth.user.id })
+                    "
                     class="flex items-center justify-between max-w-[300px]"
                 >
                     <div class="flex items-center">
                         <img
+                            :src="$page.props.auth.user.file"
                             class="rounded-full z-10 w-[58px] h-[58px]"
-                            src="https://placehold.co/200x200"
                         />
                         <div class="pl-4">
                             <div class="font-extrabold text-black">
-                                NAME HERE
+                                {{ $page.props.auth.user.name }}
                             </div>
                             <div class="text-sm text-gray-500 text-extrabold">
-                                NAME HERE
+                                {{ $page.props.auth.user.name }}
                             </div>
                         </div>
                     </div>
@@ -177,31 +189,38 @@ const disableCreatingPost = () => {
                 </div>
 
                 <!-- In future, we will grab the users from DB and loop through the users array -->
-                <Link
-                    class="flex items-center justify-between max-w-[300px] pb-2"
-                    href="/"
+                <div
+                    v-for="randUser in $page.props.auth.randomUsers"
+                    :key="randUser"
                 >
-                    <div class="flex items-center">
-                        <img
-                            class="rounded-full z-10 w-[37px] h-[37px]"
-                            src="https://placehold.co/200x200"
-                        />
-                        <div class="pl-4">
-                            <div class="font-extrabold text-black">
-                                NAME HERE
-                            </div>
-                            <div class="text-sm text-gray-500 text-extrabold">
-                                NAME HERE
+                    <Link
+                        :href="route('users.show', { id: randUser.id })"
+                        class="flex items-center justify-between max-w-[300px] pb-2"
+                    >
+                        <div class="flex items-center">
+                            <img
+                                :src="randUser.file"
+                                class="rounded-full z-10 w-[37px] h-[37px]"
+                            />
+                            <div class="pl-4">
+                                <div class="font-extrabold text-black">
+                                    {{ randUser.name }}
+                                </div>
+                                <div
+                                    class="text-sm text-gray-500 text-extrabold"
+                                >
+                                    Suggested for you
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <button
-                        class="text-xs font-extrabold text-blue-500 hover:text-gray-900"
-                    >
-                        Follow
-                    </button>
-                </Link>
+                        <button
+                            class="text-xs font-extrabold text-blue-500 hover:text-gray-900"
+                        >
+                            Follow
+                        </button>
+                    </Link>
+                </div>
 
                 <div class="max-w-[300px] mt-5">
                     <div class="text-sm text-gray-400">
@@ -239,10 +258,10 @@ const disableCreatingPost = () => {
                 :size="33"
                 class="cursor-pointer"
             />
-            <Link href="/">
+            <Link :href="route('users.show', { id: $page.props.auth.user.id })">
                 <img
+                    :src="$page.props.auth.user.file"
                     class="rounded-full w-[30px] cursor-pointer"
-                    src="https://placehold.co/300x320"
                 />
             </Link>
         </div>

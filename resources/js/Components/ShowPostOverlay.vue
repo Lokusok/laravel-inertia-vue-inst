@@ -56,9 +56,9 @@ const addComment = () => {
 
 const handleDeleteSelected = (event) => {
     emit("deleteSelected", {
-        deleteType: event.deleteType,
-        id: event.id,
-        post,
+        deleteType: toValue(event.deleteType),
+        id: toValue(event.id),
+        post: toValue(post),
     });
 
     deleteType.value = null;

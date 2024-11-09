@@ -19,7 +19,7 @@ const props = defineProps({
 
 const { iconString } = toRefs(props);
 
-// const user = usePage().props.auth.user;
+const user = usePage().props.auth.user;
 
 const isProfile = computed(() => {
     return props.iconString === "Profile";
@@ -54,11 +54,11 @@ const icon = computed(() => {
         <div class="flex items-center">
             <img
                 v-if="isProfile"
+                :src="user.file"
                 :class="{
                     'mr-1': isProfile,
                 }"
                 class="rounded-full ml-[2px] w-[30px] cursor-pointer"
-                src="https://placehold.co/300x320"
             />
             <component v-else :is="icon" fill-color="#0000000" :size="36" />
             <span

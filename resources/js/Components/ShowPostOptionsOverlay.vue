@@ -30,7 +30,9 @@ const handleDeleteClick = () => {
                 Delete {{ deleteType }}
             </button>
 
-            <button class="p-3 text-lg" @click="$emit('close')">Cancel</button>
+            <button class="w-full p-3 text-lg" @click="$emit('close')">
+                Cancel
+            </button>
         </div>
     </div>
 </template>
