@@ -13,4 +13,4 @@
 ## Запуск
 
 1.  `composer install`
-2.  `php artisan serve`
+2.  `composer run dev`
